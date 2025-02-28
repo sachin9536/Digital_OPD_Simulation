@@ -3,12 +3,12 @@
 This project is a **chatbot-based learning game** for **NEET PG students**, simulating a **hospital OPD environment**. Students interact with an **AI senior doctor** to diagnose patients by selecting tests and providing diagnoses. The system awards points based on the correctness of their selections.
 
 ## 🚀 Features  
-✅ **AI-powered medical simulation** using **Google Gemini API**  
-✅ **Real-time interaction** via **WebSockets** (`socket.io`)  
-✅ **Scoring system**: 5 points for correct choices, reducing per wrong attempt  
-✅ **SQLite database** for patient case storage  
-✅ **React Native frontend** using **Expo Router**  
-✅ **Express.js backend**  
+ **AI-powered medical simulation** using **Google Gemini API**  
+ **Real-time interaction** via **WebSockets** (`socket.io`)  
+ **Scoring system**: 5 points for correct choices, reducing per wrong attempt  
+ **SQLite database** for patient case storage  
+ **React Native frontend** using **Expo Router**  
+ **Express.js backend**  
 
 ---
 
@@ -33,14 +33,14 @@ This project is a **chatbot-based learning game** for **NEET PG students**, simu
 ## 🔧 Installation & Setup  
 
 ### 1️⃣ Backend Setup  
-cd backend
-npm install
-node server.js
+** cd backend
+** npm install
+** node server.js
 ###  Frontend Setup
-cd frontend
-npm install
-npx expo start
-Runs the app in the Expo development environment
+** cd frontend
+** npm install
+** npx expo start
+(Runs the app in the Expo development environment)
 
 ## Workflow
 1️⃣ A patient case is presented:
