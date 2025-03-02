@@ -39,21 +39,20 @@ An interactive medical simulation platform designed for NEET PG students to prac
 ## 📂 Project Structure
 
 ```
-/digital-opd/
+/Project/
 │
-├── frontend/              # React Native application
+├── digital-opd/              # React Native application
 │   ├── app/               # Expo Router screens
 │   ├── components/        # Reusable UI components
-│   ├── services/          # API and socket services
 │   └── assets/            # Images, icons and static resources
 │
-├── backend/               # Express.js server
+├── digital-opd-backend/               # Express.js server
 │   ├── server.js          # Main server with WebSocket integration
 │   ├── database.js        # SQLite database connection & queries
-│   ├── .env               # Environment variables (API keys)
 │   └── package.json       # Backend dependencies
 │
 └── README.md              # Project documentation
+├── .env             # Environment variables (API keys)
 ```
 
 ## 🚀 Installation and Setup
