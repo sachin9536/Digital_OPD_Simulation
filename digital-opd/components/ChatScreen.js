@@ -1,192 +1,3 @@
-// import React, { useEffect, useReducer } from "react";
-// import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-// import { GiftedChat } from "react-native-gifted-chat";
-// import io from "socket.io-client";
-// import FinalScoreScreen from "./FinalScoreScreen";
-
-// const socket = io("ws://localhost:5000"); // Replace with actual server IP
-
-// // Initial State
-// const initialState = {
-//   messages: [],
-//   loading: true,
-//   gameState: {
-//     phase: "test",
-//     testScore: 5,
-//     diagnosisScore: 5,
-//     testAttempts: 0,
-//     diagnosisAttempts: 0,
-//   },
-// };
-
-// // Reducer Function
-// function reducer(state, action) {
-//   switch (action.type) {
-//     case "SET_MESSAGES":
-//       return { ...state, messages: action.payload };
-//     case "ADD_MESSAGE":
-//       return { ...state, messages: GiftedChat.append(state.messages, [action.payload]) };
-//     case "UPDATE_GAME_STATE":
-//       return { ...state, gameState: { ...state.gameState, ...action.payload } };
-//     case "SET_LOADING":
-//       return { ...state, loading: action.payload };
-//     default:
-//       return state;
-//   }
-// }
-
-// export default function ChatScreen() {
-//   const [state, dispatch] = useReducer(reducer, initialState);
-
-//   useEffect(() => {
-//     console.log("Connecting to server...");
-//     socket.emit("request_patient");
-
-//     // Handle Patient Case
-//     socket.on("patient_case", ({ patientDialogue, aiAnalysis }) => {
-//       console.log("Received patient case:", patientDialogue);
-//       dispatch({ type: "SET_LOADING", payload: false });
-//       dispatch({
-//         type: "SET_MESSAGES",
-//         payload: [
-//           {
-//             _id: 1,
-//             text: `🧑‍⚕️ Patient: ${patientDialogue}`,
-//             createdAt: new Date(),
-//             user: { _id: 2, name: "Patient" },
-//           },
-//           {
-//             _id: 2,
-//             text: `🔬 AI Doctor: ${aiAnalysis}`,
-//             createdAt: new Date(),
-//             user: { _id: 2, name: "Doctor" },
-//           },
-//         ],
-//       });
-//     });
-
-//     // Handle Test Results
-//     socket.on("test_result", ({ correct, score, aiMessage, attempts }) => {
-//       dispatch({
-//         type: "UPDATE_GAME_STATE",
-//         payload: {
-//           testScore: score,
-//           testAttempts: attempts,
-//           phase: correct ? "diagnosis" : "test",
-//         },
-//       });
-
-//       addSystemMessage(
-//         `${aiMessage}\n\n${correct ? `✅ Correct!` : `❌ Attempt ${attempts}: Try again.`}`
-//       );
-//     });
-
-//     // Handle Next Steps
-//     socket.on("next_step", ({ message }) => {
-//       dispatch({
-//         type: "ADD_MESSAGE",
-//         payload: {
-//           _id: Date.now(),
-//           text: `🩺 AI Doctor: ${message}`,
-//           createdAt: new Date(),
-//           user: { _id: 2, name: "Doctor" },
-//         },
-//       });
-//     });
-
-//     // Handle Diagnosis Results
-//     socket.on("diagnosis_result", ({ correct, score, aiMessage, attempts }) => {
-//       dispatch({
-//         type: "UPDATE_GAME_STATE",
-//         payload: {
-//           diagnosisScore: score,
-//           diagnosisAttempts: attempts,
-//           phase: correct ? "completed" : "diagnosis",
-//         },
-//       });
-
-//       addSystemMessage(
-//         `${aiMessage}\n\n${correct ? `🎉 Diagnosis Correct!` : `⚠️ Attempt ${attempts}: Re-evaluate.`}`
-//       );
-//     });
-
-//     // Handle Errors & Disconnections
-//     socket.on("connect_error", (err) => console.error("Socket Error:", err));
-//     socket.on("disconnect", () => {
-//       console.warn("Disconnected. Reconnecting...");
-//       setTimeout(() => socket.connect(), 3000);
-//     });
-
-//     return () => {
-//       socket.off("patient_case");
-//       socket.off("test_result");
-//       socket.off("next_step");
-//       socket.off("diagnosis_result");
-//       socket.off("connect_error");
-//       socket.off("disconnect");
-//     };
-//   }, []);
-
-//   // Function to Add System Messages
-//   const addSystemMessage = (text) => {
-//     dispatch({
-//       type: "ADD_MESSAGE",
-//       payload: {
-//         _id: Date.now(),
-//         text,
-//         createdAt: new Date(),
-//         user: { _id: 2, name: "Doctor" },
-//       },
-//     });
-//   };
-
-//   // Handle Sending Messages
-//   const handleSend = (newMessages = []) => {
-//     const userMessage = newMessages[0].text;
-//     dispatch({ type: "ADD_MESSAGE", payload: newMessages[0] });
-
-//     if (state.gameState.phase === "test") {
-//       socket.emit("submit_test", { selectedTest: userMessage });
-//     } else {
-//       socket.emit("submit_diagnosis", { selectedDiagnosis: userMessage });
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       {state.loading && <ActivityIndicator size="large" />}
-
-//       {state.gameState.phase === "completed" ? (
-//         <FinalScoreScreen
-//           testScore={state.gameState.testScore}
-//           diagnosisScore={state.gameState.diagnosisScore}
-//           totalScore={state.gameState.testScore + state.gameState.diagnosisScore}
-//         />
-//       ) : (
-//         <>
-//           <View style={styles.scoreBar}>
-//             <Text style={styles.scoreText}>
-//               Test: {state.gameState.testScore}/5 (Attempts: {state.gameState.testAttempts})
-//             </Text>
-//             <Text style={styles.scoreText}>
-//               Diagnosis: {state.gameState.diagnosisScore}/5 (Attempts: {state.gameState.diagnosisAttempts})
-//             </Text>
-//           </View>
-
-//           <GiftedChat messages={state.messages} onSend={(messages) => handleSend(messages)} user={{ _id: 1 }} />
-//         </>
-//       )}
-//     </View>
-//   );
-
-// }
-
-// // Styles
-// const styles = StyleSheet.create({
-//   container: { flex: 1 },
-//   scoreBar: { padding: 10, backgroundColor: "#F5F5F5" },
-//   scoreText: { fontSize: 14, color: "#333", fontWeight: "bold" },
-// // });
 
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import {
@@ -225,6 +36,7 @@ const initialState = {
     testAttempts: 0,
     diagnosisAttempts: 0,
     previousPhase: null,
+    explanationProvided: false,
   },
 };
 
@@ -291,7 +103,7 @@ export default function ChatScreen() {
           toValue: 1,
           duration: 800,
           useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
+          easing: Easing.inOut(Easing.ease), 
         }),
       ])
     ).start();
@@ -517,22 +329,50 @@ export default function ChatScreen() {
     });
     // Handle Diagnosis Results
     socket.on("diagnosis_result", ({ correct, score, aiMessage, attempts }) => {
-      dispatch({
-        type: "UPDATE_GAME_STATE",
-        payload: {
-          diagnosisScore: score,
-          diagnosisAttempts: attempts,
-          phase: correct ? "completed" : "diagnosis",
-        },
-      });
-
-      addSystemMessage(
-        `${aiMessage}\n\n${
-          correct
-            ? `🎉 Diagnosis Correct!`
-            : `⚠️ Attempt ${attempts}: Re-evaluate.`
-        }`
-      );
+      if (correct) {
+        // When diagnosis is correct, don't change phase yet
+        dispatch({
+          type: "UPDATE_GAME_STATE",
+          payload: {
+            diagnosisScore: score,
+            diagnosisAttempts: attempts,
+            explanationProvided: true, // Set to true when correct diagnosis provided
+          },
+        });
+        
+        // Add system message with explanation
+        addSystemMessage(
+          `${aiMessage}\n\n🎉 Diagnosis Correct! Review the explanation and click "View Results" when ready.`
+        );
+        
+        // Add the new "View Results" button message after a short delay
+        setTimeout(() => {
+          dispatch({
+            type: "ADD_MESSAGE", 
+            payload: {
+              _id: Date.now(),
+              text: "Ready to see your final results?",
+              createdAt: new Date(),
+              system: true,
+              viewResultsButton: true, // Special flag for the button
+            }
+          });
+        }, 1000);
+      } else {
+        // When diagnosis is incorrect, behavior remains the same
+        dispatch({
+          type: "UPDATE_GAME_STATE",
+          payload: {
+            diagnosisScore: score,
+            diagnosisAttempts: attempts,
+            phase: "diagnosis",
+          },
+        });
+        
+        addSystemMessage(
+          `${aiMessage}\n\n⚠️ Attempt ${attempts}: Re-evaluate.`
+        );
+      }
     });
 
     // Handle Errors & Disconnections
@@ -733,7 +573,37 @@ export default function ChatScreen() {
   const renderSystemMessage = (props) => {
     // Get animation values for this message
     const animations = messageAnimations[props.currentMessage._id];
-
+    
+    // Check if this is our "View Results" button message
+    if (props.currentMessage.viewResultsButton) {
+      return (
+        <View style={styles.viewResultsContainer}>
+          <TouchableOpacity 
+            style={styles.viewResultsButton}
+            onPress={() => {
+              // Change game phase to completed to show final screen
+              dispatch({
+                type: "UPDATE_GAME_STATE",
+                payload: {
+                  phase: "completed"
+                }
+              });
+            }}
+          >
+            <LinearGradient
+              colors={["#4CAF50", "#2E7D32"]}
+              style={styles.viewResultsGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Text style={styles.viewResultsText}>View Final Results</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    
+    // Original system message rendering logic...
     const Container = animations ? Animated.View : View;
     const containerStyle = animations
       ? {
@@ -741,7 +611,7 @@ export default function ChatScreen() {
           transform: [{ translateY: animations.translateY }],
         }
       : {};
-
+  
     return (
       <Container style={containerStyle}>
         <SystemMessage
@@ -754,8 +624,8 @@ export default function ChatScreen() {
             marginTop: 8,
             marginLeft: 16,
             marginRight: 16,
-            maxWidth: "90%", // Ensure proper width constraint
-            alignSelf: "center", // Center the system message
+            maxWidth: "90%",
+            alignSelf: "center",
             borderWidth: 1,
             borderColor: "#FFE082",
             ...Platform.select({
@@ -777,13 +647,12 @@ export default function ChatScreen() {
             color: "#5D4037",
             fontWeight: "500",
             lineHeight: 20,
-            flexWrap: "wrap", // Ensure text wraps properly
+            flexWrap: "wrap",
           }}
         />
       </Container>
     );
   };
-
   // Custom day banner
   const renderDay = (props) => {
     return (
@@ -892,10 +761,14 @@ export default function ChatScreen() {
       </Animated.View>
     );
   };
-  const animatedStyle = () => {
-    'worklet';
-    return { opacity: progress.value };
-  };
+  // Either remove the function completely, or fix it like this:
+const progress = useRef(new Animated.Value(0)).current;
+
+const animatedStyle = () => {
+  "worklet";
+  return { opacity: progress.value };
+};
+
   // Tip Component
   const TipComponent = () => {
     if (!showTip) return null;
@@ -911,24 +784,6 @@ export default function ChatScreen() {
       </Animated.View>
     );
     // Add this to your tip animation useEffect
-    if (showTip) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(tipScale, {
-            toValue: 1.03,
-            duration: 1000,
-            useNativeDriver: true,
-            easing: Easing.inOut(Easing.ease),
-          }),
-          Animated.timing(tipScale, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-            easing: Easing.inOut(Easing.ease),
-          }),
-        ])
-      ).start();
-    }
   };
 
   return (
@@ -1101,6 +956,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
     marginBottom: 16,
+    colors: ["#0A6EBD", "#0353A4", "#023E7D"],
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -1309,4 +1165,42 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 20,
   },
+  // Add to the styles object
+viewResultsContainer: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginVertical: 20,
+  paddingHorizontal: 20,
+  alignSelf: 'center',
+},
+viewResultsButton: {
+  borderRadius: 25,
+  overflow: 'hidden',
+  ...Platform.select({
+    ios: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+    },
+    android: {
+      elevation: 5,
+    },
+    web: {
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+    },
+  }),
+},
+viewResultsGradient: {
+  paddingVertical: 14,
+  paddingHorizontal: 36,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+viewResultsText: {
+  color: '#fff',
+  fontWeight: '600',
+  fontSize: 18,
+  letterSpacing: 0.5,
+},
 });

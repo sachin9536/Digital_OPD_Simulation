@@ -213,7 +213,7 @@ export default function FinalScoreScreen({ testScore = 0, diagnosisScore = 0, to
         <View style={styles.scoreCard}>
           <View style={styles.scoreHeaderRow}>
             <View style={styles.scoreIconContainer}>
-              <Text style={styles.scoreIcon}>🧪</Text>
+              <Text style={styles.scoreIcon}>🩻</Text>
             </View>
             <Text style={styles.scoreCardTitle}>Test Score</Text>
           </View>
@@ -241,7 +241,7 @@ export default function FinalScoreScreen({ testScore = 0, diagnosisScore = 0, to
         <View style={styles.scoreCard}>
           <View style={styles.scoreHeaderRow}>
             <View style={styles.scoreIconContainer}>
-              <Text style={styles.scoreIcon}>💉</Text>
+              <Text style={styles.scoreIcon}>🧑🏻‍⚕</Text>
             </View>
             <Text style={styles.scoreCardTitle}>Diagnosis Score</Text>
           </View>
